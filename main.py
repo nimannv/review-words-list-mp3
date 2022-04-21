@@ -1,5 +1,6 @@
+from email import parser
 import sys, getopt
-
+import voice, parser
 
 def main(argv):
     file_path = ''
@@ -29,11 +30,9 @@ def main(argv):
         elif opt in ("-f", "--frame"):
             frame_size = int(arg.strip())
     
-    print('file_path :' , file_path)
-    print('word_repeat :' , word_repeat)
-    print('description_repeat :' , description_repeat)
-    print('just_important :' , just_important)
-    print('frame_size : ' , frame_size)
+    item_list = parser.get_words_list(file_path, just_important)
+    for item in item_list:
+        voice.get_voice(item['word'])
 
 
 if __name__ == "__main__":
