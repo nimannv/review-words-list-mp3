@@ -1,6 +1,6 @@
 import csv
 
-def get_words_list(file_path):
+def get_words_list(file_path, just_important):
     file = open(file_path)
     csvreader = csv.reader(file)
 
@@ -10,10 +10,20 @@ def get_words_list(file_path):
     
     result = []
     for item in rows:
-        result.append({
-            "word":item[0],
-            "important": True if not item[1].strip() == '' else False,
-            "description":item[2],
-        })
+        importance = True if not item[1].strip() == '' else False
+        if not just_important:
+            result.append({
+                "word":item[0],
+                "description":item[2],
+            })
+        elif just_important and importance:
+            result.append({
+                "word":item[0],
+                "description":item[2],
+            })
     file.close()
     return result
+
+if __name__ == "__main__":
+   list = get_words_list("review-files-csv/example.csv", True)
+   print(list)
