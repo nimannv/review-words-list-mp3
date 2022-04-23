@@ -7,8 +7,7 @@ def get_voice(text):
     if not os.path.exists('voices/'+text_hash+'.mp3'):
         voice = gtts.gTTS(text)
         voice.save('voices/'+text_hash+'.mp3')
-    else:
-        print("its exist")
+    return 'voices/'+text_hash+'.mp3'
 
 if __name__ == "__main__":
    get_voice('hello world')

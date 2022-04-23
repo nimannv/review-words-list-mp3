@@ -1,6 +1,9 @@
 from email import parser
+from gc import collect
 import sys, getopt
 import voice, parser
+from pydub import AudioSegment
+import time
 
 def main(argv):
     file_path = ''
@@ -22,7 +25,7 @@ def main(argv):
         elif opt in ("-s", "--source"):
             file_path = arg.strip()
         elif opt in ("-w", "--word-repeat"):
-            word_repeat = arg.strip()
+            word_repeat = int(arg.strip())
         elif opt in ("-d", "--des-repeat"):
             description_repeat = int(arg.strip())
         elif opt in ("-i"):
@@ -30,10 +33,33 @@ def main(argv):
         elif opt in ("-f", "--frame"):
             frame_size = int(arg.strip())
     
+    # Get items
     item_list = parser.get_words_list(file_path, just_important)
-    for item in item_list:
-        voice.get_voice(item['word'])
 
+    #--------
+    between_long = AudioSegment.silent(duration=1000)
+    between_short = AudioSegment.silent(duration=1000)
+    review_voice = AudioSegment.empty()
+
+    # Collect all voices
+    for item in item_list:
+        word_voice_file_name = voice.get_voice(item['word'])
+        word_voice = AudioSegment.from_mp3(word_voice_file_name)
+
+        for _ in range(word_repeat):
+            review_voice += word_voice + between_short
+        review_voice += between_short
+
+        if description_repeat > 0:
+            for _ in range(description_repeat):
+                desc_voice_file_name = voice.get_voice(item['description'])
+                desc_voice = AudioSegment.from_mp3(desc_voice_file_name)
+                review_voice += desc_voice + between_short
+  
+        review_voice += between_long
+            
+    # Export review file
+    review_voice.export("review-files-mp3/review-"+str(time.time())+".mp3", format="mp3")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
