@@ -14,12 +14,14 @@ def get_words_list(file_path, just_important):
         if not just_important:
             result.append({
                 "word":item[0],
-                "description":item[2],
+                "meaning":item[1],
+                "example":item[2],
             })
         elif just_important and importance:
             result.append({
                 "word":item[0],
-                "description":item[2],
+                "meaning":item[1],
+                "example":item[2],
             })
     file.close()
     return result

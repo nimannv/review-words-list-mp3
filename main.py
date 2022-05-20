@@ -8,26 +8,32 @@ import time
 def main(argv):
     file_path = ''
     word_repeat = 1
-    description_repeat = 1
+    example_repeat = 1
+    meaning_repeat = 1
     just_important = False
     frame_size = None
+    review_file_name = str(time.time())
 
     try:
-        opts, args = getopt.getopt(argv,"hs:w:d:if:",["source=","word-repeat=","des-repeat=","frame="])
+        opts, args = getopt.getopt(argv,"his:w:m:e:o:",["source=","word=","meaning=","example=","output="])
     except getopt.GetoptError:
         print ('explain how to execute it in a right way')
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print('main.py -s <source> -w <word_repeat> -d <description_repeat> \n -i: Just important word. \n -f: frame size, count of word in single MP3 file.')
+            print('main.py -s <source> -w <word_repeat> -d <example_repeat> \n -i: Just important word. \n -f: frame size, count of word in single MP3 file.')
             sys.exit()
         elif opt in ("-s", "--source"):
             file_path = arg.strip()
-        elif opt in ("-w", "--word-repeat"):
+        elif opt in ("-o", "--output"):
+            review_file_name = arg.strip()
+        elif opt in ("-w", "--word"):
             word_repeat = int(arg.strip())
-        elif opt in ("-d", "--des-repeat"):
-            description_repeat = int(arg.strip())
+        elif opt in ("-m", "--meaning"):
+            meaning_repeat = int(arg.strip())
+        elif opt in ("-e", "--example"):
+            example_repeat = int(arg.strip())
         elif opt in ("-i"):
             just_important = True
         elif opt in ("-f", "--frame"):
@@ -49,17 +55,27 @@ def main(argv):
         for _ in range(word_repeat):
             review_voice += word_voice + between_short
         review_voice += between_short
+        #---------meaning---------
+        if meaning_repeat > 0:
+            if not item['meaning'].strip() == '':
+                mean_voice_file_name = voice.get_voice(item['meaning'])
+                for _ in range(meaning_repeat):        
+                    desc_voice = AudioSegment.from_mp3(mean_voice_file_name)
+                    review_voice += desc_voice + between_short
+        #---------example---------  
+        if example_repeat > 0:
+            if not item['example'].strip() == '':
+                desc_voice_file_name = voice.get_voice(item['example'])
+                for _ in range(example_repeat):        
+                    desc_voice = AudioSegment.from_mp3(desc_voice_file_name)
+                    review_voice += desc_voice + between_short
 
-        if description_repeat > 0:
-            for _ in range(description_repeat):
-                desc_voice_file_name = voice.get_voice(item['description'])
-                desc_voice = AudioSegment.from_mp3(desc_voice_file_name)
-                review_voice += desc_voice + between_short
+                
   
         review_voice += between_long
             
     # Export review file
-    review_voice.export("review-files-mp3/review-"+str(time.time())+".mp3", format="mp3")
+    review_voice.export("review-files-mp3/review-"+review_file_name+".mp3", format="mp3")
 
 if __name__ == "__main__":
    main(sys.argv[1:])

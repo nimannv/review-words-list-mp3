@@ -3,6 +3,7 @@ import hashlib
 import os.path
 
 def get_voice(text):
+    text = text.lower().strip()
     text_hash = hashlib.sha1(text.encode('utf-8')).hexdigest()
     if not os.path.exists('voices/'+text_hash+'.mp3'):
         voice = gtts.gTTS(text)
