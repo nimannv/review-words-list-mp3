@@ -1,0 +1,5 @@
+env
+voices/
+__pycache__/
+review-files-csv/
+review-files-mp3/
